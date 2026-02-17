@@ -9,11 +9,11 @@ function AdminDashboard() {
   useEffect(() => {
     axios.get(api.getUsers.url).then((res) => {
       if (res.data.success) setUsers(res.data.body);
-      console.log(setUsers,"setusers")
+      console.log(setUsers, "setusers");
     });
     axios.get(api.getDoctors.url).then((res) => {
       if (res.data.success) setDoctors(res.data.body);
-      console.log(setDoctors,"setdoctors")
+      console.log(setDoctors, "setdoctors");
     });
   }, []);
 
@@ -48,9 +48,13 @@ function AdminDashboard() {
           </table>
         </div>
         <div className="col-md-6">
-          <h4>Available Doctors</h4>
-          
-          <h4>Add a Doctor</h4>
+          <div className="doctor-header-div d-flex justify-content-between">
+            <h4>Available Doctors</h4>
+            <button >
+              <a href="/add-doctor">Add a Doctor</a>
+            </button>
+          </div>
+
           <table className="table table-bordered">
             <thead>
               <tr>

@@ -3,6 +3,7 @@ import doctorModel from "../model/doctorModel.js";
 import { imageUpload } from "../utilis/helperFile.js";
 import jwtTokenSign from "../utilis/jwtToken.js";
 import bcrypt from "bcryptjs";
+import doctorSchema from "../model/doctorModel.js";
 const saltRound = 10;
 
 const signUp = async (req, res) => {
@@ -55,7 +56,6 @@ const signUp = async (req, res) => {
     });
   }
 };
-
 
 
 const login = async (req, res) => {
@@ -118,6 +118,27 @@ const login = async (req, res) => {
   }
 };
 
+const addDoctor = async (req, res) => {
+  try {
+    const doctor = new doctorSchema({
+      ...req.body,
+      image: req.file ? req.file.filename : "",
+    });
+
+    await doctor.save();
+
+    res.json({
+      success: true,
+      message: "Doctor added successfully",
+      body: doctor,
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 
 const getAllDoctors = async (req, res) => {
@@ -181,4 +202,4 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-export default { signUp, login, getAllDoctors, getDoctorsBySpecialization, getAllUsers };
+export default { signUp, login, getAllDoctors, getDoctorsBySpecialization, getAllUsers ,addDoctor};

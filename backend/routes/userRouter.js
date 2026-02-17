@@ -8,7 +8,8 @@ router.post("/login", userController.login);
 router.get("/doctors", userController.getAllDoctors);
 router.get(
   "/doctors-by-specialization",
-  userController.getDoctorsBySpecialization
+  userController.getDoctorsBySpecialization,
 );
+router.post("/adddoctor",userController.addDoctor)
 router.get("/users", userController.getAllUsers);
 export default router;

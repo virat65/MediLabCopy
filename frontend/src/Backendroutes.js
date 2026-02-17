@@ -56,6 +56,10 @@ const api = {
     method: "get",
     url: `${server}/prescriptions`,
   },
+  addDoctor:{
+    method:"post",
+    url:`${server}/adddoctor`
+  }
 };
 
 export default api;
