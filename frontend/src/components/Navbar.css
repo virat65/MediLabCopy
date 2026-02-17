@@ -1,0 +1,43 @@
+/* Default desktop menu stays normal */
+.navmenu ul {
+  display: flex;
+  gap: 20px;
+}
+
+/* Mobile view */
+@media (max-width:1200px) {
+.login-btn,.logout-btn{
+  display: block !important;
+  margin-left: 0px !important;
+}
+  /* Hide the menu by default */
+  .navmenu ul {
+    display: none;   /* <-- important */
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 47px;
+    background: white;
+    width: 30%;
+    list-style: none;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 999;
+  }
+
+  /* Show menu on toggle */
+  .navmenu ul.menu-open {
+    display: block !important;   /* <-- only show when toggled */
+  }
+
+  /* Hamburger icon */
+  .mobile-nav-toggle {
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 10000;
+  }
+  .logout-btn{
+    margin-right: 50px;
+  }
+}
