@@ -6,11 +6,18 @@ const appointmentSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     date: String,
     message: String,
+
+    appointmentType: {
+      type: String,
+      enum: ["OPD", "IPD", "General"],
+      default: "General",
+      required: true,
+    },
     status: { type: String, default: "pending" },
     rejectionReason: { type: String, default: "" },
     rescheduleDate: { type: String, default: "" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("appointment", appointmentSchema);

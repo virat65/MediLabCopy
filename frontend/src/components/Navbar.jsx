@@ -23,12 +23,14 @@ function Navbar() {
           {/* Logo */}
           <a href="/" className="logo d-flex align-items-center me-auto">
             <h1 className="sitename">Medilab</h1>
+          </a>
+          <Link to="/profile">
             {userToken && (
               <h5 className="fs-4 mt-2 ms-5 text-primary">
-                Welcome <u>{userToken?.name}</u>
+                Profile <u>{userToken?.name}</u>
               </h5>
             )}
-          </a>
+          </Link>
 
           {/* NAV MENU */}
           <nav id="navmenu" className="navmenu">
@@ -71,28 +73,30 @@ function Navbar() {
                 </li>
               )}
 
-              <li>
-                {/* Buttons */}
-                {userToken?.role === "user" && (
+              {/* Buttons */}
+              {userToken?.role === "user" && (
+                <li>
                   <Link
                     className="cta-btn d-none d-sm-block"
                     to={"/appointment"}
                   >
                     Make an Appointment
                   </Link>
-                )}
+                </li>
+              )}
 
+              <li>
                 {userToken ? (
                   <button
-                    className="btn btn-danger ms-5 logout-btn"
+                    className="btn btn-danger ms-1 logout-btn"
                     onClick={logoutHandler}
                   >
-                    <Link>Logout</Link>
+                    Logout
                   </button>
                 ) : (
                   <Link
                     className="cta-btn d-none d-sm-block login-btn"
-                    to={"/login"}
+                    to="/login"
                   >
                     Login
                   </Link>

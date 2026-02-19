@@ -12,7 +12,7 @@ const signUp = async (req, res) => {
     let Model = userModel;
 
     // agar doctor signup kar raha hai toh doctorModel use karo
-    if (role === "doctor") Model = doctorModel;
+
 
     const validationU = await Model.findOne({ email: req.body.email });
     if (validationU !== null) {
@@ -66,9 +66,9 @@ const login = async (req, res) => {
     let Model = userModel;
 
     // agar doctor hai to doctorModel
-    if (role === "doctor") {
-      Model = doctorModel;
-    }
+if (role === "doctor") {
+  Model = doctorModel;
+}
 
     // email + role ke sath user find karo
     const findUser = await Model.findOne({ email, role });
@@ -118,14 +118,28 @@ const login = async (req, res) => {
   }
 };
 
+
 const addDoctor = async (req, res) => {
   try {
-    const doctor = new doctorSchema({
-      ...req.body,
-      image: req.file ? req.file.filename : "",
+    const existingDoctor = await doctorModel.findOne({
+      email: req.body.email,
     });
 
-    await doctor.save();
+    if (existingDoctor) {
+      return res.json({
+        success: false,
+        message: "Doctor email already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    const doctor = await doctorModel.create({
+      ...req.body,
+      password: hashedPassword,
+      role: "doctor",
+      image: req.file ? req.file.filename : "",
+    });
 
     res.json({
       success: true,
@@ -139,6 +153,31 @@ const addDoctor = async (req, res) => {
     });
   }
 };
+
+
+
+const getProfile = async (req, res) => {
+  try {
+    console.log(user,"user")
+    const user = await userModel.findById(req.user._id);
+    res.json({
+      success: true,
+      status: 200,
+      body: {
+        ...user.toObject(),
+        prevImg: `http://localhost:${process.env.PORT}/images/userImage/${user.image}`,
+      },
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      status: 400,
+      message: error.message,
+      body: {},
+    });
+  }
+};
+
 
 
 const getAllDoctors = async (req, res) => {
@@ -202,4 +241,4 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-export default { signUp, login, getAllDoctors, getDoctorsBySpecialization, getAllUsers ,addDoctor};
+export default { signUp, login, getAllDoctors, getDoctorsBySpecialization, getAllUsers ,getProfile,addDoctor};

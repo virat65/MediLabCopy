@@ -4,17 +4,19 @@ import { toast } from "react-toastify";
 import api from "../Backendroutes";
 
 function Appointment() {
-  const [doctors, setDoctors] = useState([]); // all doctors
-  const [loading, setLoading] = useState(true); // loading state
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [form, setForm] = useState({
     doctorId: "",
     doctorname: "",
     specialization: "",
     date: "",
     message: "",
+    appointmentType: "General", // ✅ added
   });
 
-  // Load all doctors
+  // Load doctors
   useEffect(() => {
     axios
       .get(api.getDoctors.url)
@@ -26,12 +28,10 @@ function Appointment() {
       .finally(() => setLoading(false));
   }, []);
 
-  // input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // when user selects a doctor
   const handleDoctorSelect = (e) => {
     const id = e.target.value;
     const selected = doctors.find((d) => d._id === id);
@@ -44,7 +44,6 @@ function Appointment() {
     });
   };
 
-  // submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = JSON.parse(sessionStorage.getItem("userInfo"));
@@ -57,11 +56,10 @@ function Appointment() {
     try {
       await axios.post(api.createAppointment.url, {
         doctorId: form.doctorId,
-        doctorname: form.doctorname,
-        specialization: form.specialization,
         userId: user._id,
         date: form.date,
         message: form.message,
+        appointmentType: form.appointmentType, // ✅ sending
       });
 
       toast.success("Appointment requested!");
@@ -72,20 +70,21 @@ function Appointment() {
         specialization: "",
         date: "",
         message: "",
+        appointmentType: "General", // reset
       });
-    } catch (err) {
+    } catch {
       toast.error("Failed to request appointment");
     }
   };
 
   return (
     <section id="appointment" className="appointment section">
-      <div className="container section-title" data-aos="fade-up">
+      <div className="container section-title">
         <h2>Appointment</h2>
         <p>Book appointment with a doctor</p>
       </div>
 
-      <div className="container" data-aos="fade-up" data-aos-delay={100}>
+      <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="row">
             {/* Doctor Dropdown */}
@@ -101,16 +100,15 @@ function Appointment() {
                 <option value="">
                   {loading ? "Loading doctors..." : "Select Doctor"}
                 </option>
-                {Array.isArray(doctors) &&
-                  doctors.map((doc) => (
-                    <option key={doc._id} value={doc._id}>
-                      {doc.name} — {doc.specialization}
-                    </option>
-                  ))}
+                {doctors.map((doc) => (
+                  <option key={doc._id} value={doc._id}>
+                    {doc.name} — {doc.specialization}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Specialization auto-filled */}
+            {/* Specialization */}
             <div className="col-md-6 form-group mt-2">
               <input
                 type="text"
@@ -119,6 +117,21 @@ function Appointment() {
                 disabled
                 placeholder="Specialization"
               />
+            </div>
+
+            {/* Appointment Type Dropdown */}
+            <div className="col-md-6 form-group mt-3">
+              <select
+                className="form-control"
+                name="appointmentType"
+                value={form.appointmentType}
+                onChange={handleChange}
+                required
+              >
+                <option value="General">General</option>
+                <option value="OPD">OPD</option>
+                <option value="IPD">IPD</option>
+              </select>
             </div>
 
             {/* Date */}
@@ -134,7 +147,7 @@ function Appointment() {
             </div>
 
             {/* Message */}
-            <div className="col-md-6 form-group mt-3">
+            <div className="col-md-12 form-group mt-3">
               <input
                 type="text"
                 name="message"

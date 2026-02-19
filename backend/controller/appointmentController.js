@@ -1,17 +1,22 @@
 import appointmentModel from "../model/appointmentModel.js";
 import userModel from "../model/userModel.js";
 
+
+
 export const createAppointment = async (req, res) => {
   try {
-    const { doctorId, userId, date, message } = req.body;
+    const { doctorId, userId, date, message, appointmentType } = req.body;
+
     const appointment = await appointmentModel.create({
       doctorId,
       userId,
       date,
       message,
+      appointmentType, // ✅ added
     });
+
     res.json({
-      success: true, 
+      success: true,
       status: 200,
       message: "Appointment requested",
       body: appointment,
@@ -20,6 +25,7 @@ export const createAppointment = async (req, res) => {
     res.json({ success: false, status: 400, message: err.message });
   }
 };
+
 
 export const getDoctorAppointments = async (req, res) => {
   try {
@@ -35,19 +41,25 @@ export const getDoctorAppointments = async (req, res) => {
 export const updateAppointmentStatus = async (req, res) => {
   try {
     const { appointmentId, status, rejectionReason, rescheduleDate } = req.body;
-    const update = { status };
+
+    const update = {};
+
+    if (status) update.status = status;
     if (rejectionReason) update.rejectionReason = rejectionReason;
     if (rescheduleDate) update.rescheduleDate = rescheduleDate;
+
     const updated = await appointmentModel.findByIdAndUpdate(
       appointmentId,
       update,
-      { new: true }
+      { new: true },
     );
+
     res.json({ success: true, status: 200, body: updated });
   } catch (err) {
     res.json({ success: false, status: 400, message: err.message });
   }
 };
+
 export const getUserAppointments = async (req, res) => {
   try {
     const { userId } = req.query;
@@ -57,5 +69,19 @@ export const getUserAppointments = async (req, res) => {
     res.json({ success: true, status: 200, body: appointments });
   } catch (err) {
     res.json({ success: false, status: 400, message: err.message });
+  }
+};
+
+export const allAppointments = async (req, res) => {
+  try {
+    const appointments = await appointmentModel
+      .find()
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email")
+      .populate("doctorId", "name specialization");
+    res.json({ success: true, status: 200, body: appointments });
+    console.log(appointments,"Aaaaa")
+  } catch (error) {
+    res.json({ success: false, status: 400, message: error.message });
   }
 };

@@ -56,10 +56,18 @@ const api = {
     method: "get",
     url: `${server}/prescriptions`,
   },
-  addDoctor:{
-    method:"post",
-    url:`${server}/adddoctor`
-  }
+  addDoctor: {
+    method: "post",
+    url: `${server}/adddoctor`,
+  },
+  getprofile: {
+    method: "get",
+    url: `${server}/getprofile`,
+  },
+  allappointments: {
+    method: "get",
+    url: `${server}/allappointments`,
+  },
 };
 
 export default api;

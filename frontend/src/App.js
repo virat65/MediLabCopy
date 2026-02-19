@@ -29,6 +29,7 @@ import FAQ from "./components/FAQ";
 import Testimonial from "./components/Testimonial";
 import MyAppointments from "./components/MyAppointments";
 import AddDoctor from "./components/AddDoctor";
+import Profile from "./components/Profile";
 function App() {
   useEffect(() => {
     AOS.init({
@@ -61,6 +62,7 @@ function App() {
           <Route path="/my-appointments" element={<MyAppointments />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/add-doctor" element={<AddDoctor/>} />
+          <Route path="/profile" element={<Profile/>} />
           <Route
             path="/requested-appointments"
             element={<RequestedAppointments />}

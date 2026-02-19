@@ -12,4 +12,5 @@ router.get(
 );
 router.post("/adddoctor",userController.addDoctor)
 router.get("/users", userController.getAllUsers);
+router.get("/getprofile", userController.getProfile);
 export default router;

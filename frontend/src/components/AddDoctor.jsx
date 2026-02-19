@@ -19,9 +19,7 @@ function AddDoctor() {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // handle text inputs
   const handleChange = (e) => {
-
     const { name, value } = e.target;
     setDoctor((prev) => ({
       ...prev,
@@ -29,34 +27,43 @@ function AddDoctor() {
     }));
   };
 
-  // handle image
   const handleImage = (e) => {
     setImage(e.target.files[0]);
   };
 
-  // submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // FormData for file upload
       const formData = new FormData();
 
-      // append all fields
       Object.keys(doctor).forEach((key) => {
         formData.append(key, doctor[key]);
       });
 
-      // append image
       if (image) {
         formData.append("image", image);
       }
 
-      const res = await axios.post(api.addDoctor.url, formData,);
+      const res = await axios.post(api.addDoctor.url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (res.data.success) {
         alert("Doctor added successfully");
+
+        setDoctor({
+          name: "",
+          email: "",
+          mobile: "",
+          specialization: "",
+          experience: "",
+          qualification: "",
+          password: "",
+        });
+
+        setImage(null);
         navigate("/admin-dashboard");
       } else {
         alert(res.data.message);
@@ -75,8 +82,6 @@ function AddDoctor() {
 
       <form onSubmit={handleSubmit} className="mt-4">
         <div className="row">
-
-          {/* Name */}
           <div className="col-md-6 mb-3">
             <label>Name</label>
             <input
@@ -89,7 +94,6 @@ function AddDoctor() {
             />
           </div>
 
-          {/* Email */}
           <div className="col-md-6 mb-3">
             <label>Email</label>
             <input
@@ -102,7 +106,6 @@ function AddDoctor() {
             />
           </div>
 
-          {/* Mobile */}
           <div className="col-md-6 mb-3">
             <label>Mobile</label>
             <input
@@ -115,20 +118,24 @@ function AddDoctor() {
             />
           </div>
 
-          {/* Specialization */}
           <div className="col-md-6 mb-3">
             <label>Specialization</label>
-            <input
-              type="text"
+            <select
               name="specialization"
               value={doctor.specialization}
               onChange={handleChange}
               className="form-control"
               required
-            />
+            >
+              <option value="">Select Specialization</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Neurology">Neurology</option>
+              <option value="Hepatology">Hepatology</option>
+              <option value="Pediatrics">Pediatrics</option>
+              <option value="Eye Care">Eye Care</option>
+            </select>
           </div>
 
-          {/* Experience */}
           <div className="col-md-6 mb-3">
             <label>Experience (years)</label>
             <input
@@ -141,7 +148,6 @@ function AddDoctor() {
             />
           </div>
 
-          {/* Qualification */}
           <div className="col-md-6 mb-3">
             <label>Qualification</label>
             <input
@@ -154,7 +160,6 @@ function AddDoctor() {
             />
           </div>
 
-          {/* Password */}
           <div className="col-md-6 mb-3">
             <label>Password</label>
             <input
@@ -167,7 +172,6 @@ function AddDoctor() {
             />
           </div>
 
-          {/* Image */}
           <div className="col-md-6 mb-3">
             <label>Doctor Image</label>
             <input
@@ -177,7 +181,6 @@ function AddDoctor() {
               className="form-control"
             />
           </div>
-
         </div>
 
         <button type="submit" className="btn btn-primary" disabled={loading}>

@@ -14,8 +14,16 @@ const userModel = new mongoose.Schema(
     password: { type: String, default: "" },
     token: { type: String, default: "" },
     loginTime: { type: Number, default: 0 },
+    uid: {
+      type: String,
+      default: function () {
+        const random = Math.floor(1000 + Math.random() * 9000);
+        return `${this.role[0].toUpperCase()}${Date.now()}${random}`;
+      },
+      unique: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const userSchema = mongoose.model("user", userModel);
