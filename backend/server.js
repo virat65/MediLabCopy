@@ -8,6 +8,9 @@ import fileUpload from "express-fileupload";
 import cors from "cors";
 import appointmentRouter from "./routes/appointmentRouter.js";
 import prescriptionRouter from "./routes/prescriptionRouter.js";
+import staffRouter from "./routes/staffRouter.js";
+import deparmentRouter from "./routes/derparmentRouter.js";
+import patientRouter from "./routes/patientRouter.js";
 // Set up __dirname equivalent in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,6 +32,9 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 app.use("/", router);
 app.use("/", appointmentRouter);
 app.use("/", prescriptionRouter);
+app.use("/",deparmentRouter)
+app.use("/",staffRouter)
+app.use("/",patientRouter)
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);

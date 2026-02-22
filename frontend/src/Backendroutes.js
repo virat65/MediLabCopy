@@ -19,7 +19,7 @@ const api = {
     url: `${server}/users`,
   },
 
-  // 🔹 DOCTORS
+  // 🔹 DOCTORSc
   getDoctors: {
     method: "get",
     url: `${server}/doctors`,
@@ -67,6 +67,30 @@ const api = {
   allappointments: {
     method: "get",
     url: `${server}/allappointments`,
+  },
+  allstaff: {
+    method: "get",
+    url: `${server}/all-staff`,
+  },
+  addstaff: {
+    method: "post",
+    url: `${server}/add-staff`,
+  },
+  alldeparment: {
+    method: "get",
+    url: `${server}/all-department`,
+  },
+  adddeparment: {
+    method: "post",
+    url: `${server}/add-department`,
+  },
+  addpatient: {
+    method: "post",
+    url: `${server}/add-patient`,
+  },
+  allpatient: {
+    method: "get",
+    url: `${server}/all-patient`,
   },
 };
 
