@@ -1,14 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import api from "../Backendroutes";
 import { toast } from "react-toastify";
 
 function AddPatient() {
+  // ------------------ DATE & TIME ------------------
+  const date_time = new Date();
+
+  // get current date
+  // adjust 0 before single digit date
+  let date = ("0" + date_time.getDate()).slice(-2);
+
+  // get current month
+  let month = ("0" + (date_time.getMonth() + 1)).slice(-2);
+
+  // get current year
+  let year = date_time.getFullYear();
+  // get current hours
+  let hours = date_time.getHours();
+
+  // get current minutes
+  let minutes = date_time.getMinutes();
+
+  // get current seconds
+  let current_date = date + "-" + month + "-" + year;
+  // console.log(current_date, "current date");
+  let current_time = hours + ":" + minutes;
+
+  const [generatedUhid, setGeneratedUhid] = useState(0);
+  const [suggestions, setSuggestions] = useState([]);
+  const [opdno, setOpdno] = useState(0);
+
   const [form, setForm] = useState({
     isOldPatient: false,
-    opdNo: "",
-    date: "",
-    time: "",
+    opdNo: opdno,
+    date: current_date,
+    time: current_time,
     patientName: "",
     guardianName: "",
     gender: "",
@@ -25,21 +52,58 @@ function AddPatient() {
     district: "",
   });
 
-  const [generatedUhid, setGeneratedUhid] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const allopdappointments = async () => {
+    try {
+      const res = await axios.get(api.allappointments.url);
+      const allappointments = res.data.body;
 
-  // 🔹 Handle Input Change
+      const opdappointments = allappointments.filter(
+        (appointment) => appointment.appointmentType === "OPD",
+      );
+      console.log(opdappointments, "opdappointment");
+      const opdlength = opdappointments.length + 1;
+      console.log(opdlength, "opdlengt");
+      setOpdno(opdlength);
+      setForm((prev) => ({
+        ...prev,
+        opdNo: opdlength,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const totalPatients = async () => {
+    try {
+      const res = await axios.get(api.allpatient.url);
+      setGeneratedUhid(res.data.body.length + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    allopdappointments();
+    totalPatients();
+  }, []);
+
+  // ------------------ HANDLE CHANGE ------------------
   const handleChange = async (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
 
-    // Old patient search
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Search old patient
     if (name === "patientName" && value.length > 1 && form.isOldPatient) {
       try {
         const res = await axios.get(`${api.allpatient.url}?name=${value}`);
 
         if (res.data.success) {
-          setSuggestions(res.data.data);
+          setSuggestions(res.data.body);
         }
       } catch (error) {
         console.log(error);
@@ -49,10 +113,10 @@ function AddPatient() {
     }
   };
 
-  // 🔹 Select Old Patient
+
   const selectPatient = (patient) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       patientName: patient.patientName || "",
       guardianName: patient.guardianName || "",
       gender: patient.gender || "",
@@ -61,19 +125,19 @@ function AddPatient() {
       aadharNo: patient.aadharNo || "",
       mobile: patient.mobile || "",
       email: patient.email || "",
-      dob: patient.dob || "",
+      dob: patient.dob ? patient.dob.split("T")[0] : "",
       age: patient.age || "",
       houseNo: patient.houseNo || "",
       street: patient.street || "",
       village: patient.village || "",
       district: patient.district || "",
-    });
+    }));
 
     setGeneratedUhid(patient.uhidNo);
     setSuggestions([]);
   };
 
-  // 🔹 Calculate Age from DOB
+
   const handleDobChange = (e) => {
     const dob = e.target.value;
     const birthDate = new Date(dob);
@@ -86,10 +150,14 @@ function AddPatient() {
       age--;
     }
 
-    setForm({ ...form, dob, age });
+    setForm((prev) => ({
+      ...prev,
+      dob,
+      age,
+    }));
   };
 
-  // 🔹 Submit Form
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -99,30 +167,30 @@ function AddPatient() {
       if (res.data.success) {
         toast.success("Patient Registered Successfully");
 
-        setGeneratedUhid(res.data.data.uhid);
-
-        setForm({
-          isOldPatient: false,
-          opdNo: "",
-          date: "",
-          time: "",
-          patientName: "",
-          guardianName: "",
-          gender: "",
-          maritalStatus: "",
-          bloodGroup: "",
-          aadharNo: "",
-          mobile: "",
-          email: "",
-          dob: "",
-          age: "",
-          houseNo: "",
-          street: "",
-          village: "",
-          district: "",
-        });
+        // setForm({
+        //   isOldPatient: false,
+        //   opdNo: "",
+        //   date: current_date,
+        //   time: current_time,
+        //   patientName: "",
+        //   guardianName: "",
+        //   gender: "",
+        //   maritalStatus: "",
+        //   bloodGroup: "",
+        //   aadharNo: "",
+        //   mobile: "",
+        //   email: "",
+        //   dob: "",
+        //   age: "",
+        //   houseNo: "",
+        //   street: "",
+        //   village: "",
+        //   district: "",
+        // });
 
         setSuggestions([]);
+        allopdappointments();
+        totalPatients();
       } else {
         toast.error("Something went wrong");
       }
@@ -132,6 +200,7 @@ function AddPatient() {
     }
   };
 
+  
   return (
     <div className="container mt-4">
       <h3 className="mb-4">Patient Registration</h3>
@@ -145,7 +214,10 @@ function AddPatient() {
               className="form-control"
               value={form.isOldPatient ? "Yes" : "No"}
               onChange={(e) =>
-                setForm({ ...form, isOldPatient: e.target.value === "Yes" })
+                setForm((prev) => ({
+                  ...prev,
+                  isOldPatient: e.target.value === "Yes",
+                }))
               }
             >
               <option>No</option>
@@ -159,24 +231,22 @@ function AddPatient() {
             <input
               type="text"
               className="form-control"
-              value={generatedUhid || "Auto Generated"}
+              value={generatedUhid}
               readOnly
             />
           </div>
 
-          {/* OPD No */}
+          {/* OPD */}
           <div className="col-md-3 mb-3">
             <label>OPD No</label>
             <input
               type="text"
               name="opdNo"
               value={form.opdNo}
-              onChange={handleChange}
               className="form-control"
+              readOnly
             />
           </div>
-
-          {/* Date */}
           <div className="col-md-3 mb-3">
             <label>Date</label>
             <input
@@ -201,7 +271,6 @@ function AddPatient() {
               required
             />
           </div>
-
           {/* Patient Name */}
           <div className="col-md-6 mb-3 position-relative">
             <label>Patient Name *</label>
@@ -281,38 +350,6 @@ function AddPatient() {
               <option>Male</option>
               <option>Female</option>
               <option>Other</option>
-            </select>
-          </div>
-
-          {/* Marital Status */}
-          <div className="col-md-3 mb-3">
-            <label>Marital Status</label>
-            <select
-              name="maritalStatus"
-              value={form.maritalStatus}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Select</option>
-              <option>Single</option>
-              <option>Married</option>
-            </select>
-          </div>
-
-          {/* Blood Group */}
-          <div className="col-md-3 mb-3">
-            <label>Blood Group</label>
-            <select
-              name="bloodGroup"
-              value={form.bloodGroup}
-              onChange={handleChange}
-              className="form-control"
-            >
-              <option value="">Select</option>
-              <option>A+</option>
-              <option>B+</option>
-              <option>O+</option>
-              <option>AB+</option>
             </select>
           </div>
 

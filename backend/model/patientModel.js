@@ -44,7 +44,7 @@ const patientSchema = new mongoose.Schema(
     bloodGroup: String,
 
     mobile: {
-      type: String,
+      type: Number,
       required: true,
     },
 
