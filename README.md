@@ -1,6 +1,6 @@
 🏥 MediLab – Medical Appointment Booking System
 
-Live Demo: https://medilab-project-frontend.onrender.com
+Live Demo:
 
 MediLab is a full-stack MERN CRUD-based medical appointment platform where patients can book appointments with doctors, doctors can manage schedules, and admins can manage the entire system. The application provides smooth communication between users and doctors with appointment rescheduling, acceptance, rejection, and messaging features.
 
