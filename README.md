@@ -10,7 +10,7 @@ MediLab is a full-stack MERN CRUD-based medical appointment platform where patie
 View available doctors
 
 Book appointments
-
+   
 Send and receive messages
 
 View appointment status (Accepted / Rejected / Pending)
